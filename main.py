@@ -42,11 +42,35 @@ class MainHandler(webapp2.RequestHandler):
             <input type="text" name="username">
             </label>
             <br>
+            <br>
+            <label>
+            Password:
+            <input type="text" name="username">
+            </label>
+            <br>
+            <br>
+            <label>
+            Verify:
+            <input type="text" name="verify"
+            </label>
+            <br>
+            <br>
+            <label>
+            Email: (optional)
+            <input type="text" name="email"
+            <br>
+            <br>
             <input type="submit" value="Signup!"/>
         </form>
         """
         self.response.write(page_header + signup_header + form_signup + page_footer)
 
+class Welcome(webapp2.RequestHandler):
+    def post(self):
+        welcome_header = "<h1>Welcome,</h1>"
+        self.response.write(page_header + welcome_header + page_footer)
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/welcome', Welcome)
 ], debug=True)
