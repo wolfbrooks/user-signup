@@ -15,11 +15,38 @@
 # limitations under the License.
 #
 import webapp2
+import re
+
+
+page_header = """
+<!DOCTYPE>
+<html>
+<head>
+    <title>Signup</title>
+</head>
+<body>
+"""
+
+page_footer = """
+</body>
+</html>
+"""
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello world!')
+        signup_header = "<h1>Signup</h1>"
+        form_signup = """
+        <form action="/welcome" method="post">
+            <label>
+            Username:
+            <input type="text" name="username">
+            </label>
+            <br>
+            <input type="submit" value="Signup!"/>
+        </form>
+        """
+        self.response.write(page_header + signup_header + form_signup + page_footer)
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
 ], debug=True)
