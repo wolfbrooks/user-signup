@@ -66,10 +66,6 @@ form_signup = """
     </form>
     """
 
-user_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-def valid_username(username):
-    return user_re.match(username)
-
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         signup_header = "<h1>Signup</h1>"
@@ -103,6 +99,10 @@ class Welcome(webapp2.RequestHandler):
         if password == "":
             error = "Please enter a password"
             self.redirect("/?error=" + error)
+        PASS_REGEX = re.compile(r"^.{3,20}$")
+        if not PASS_REGEX.match(password):
+            error = "Invalid Password"
+            self.redirect("/?error=" + error)
         if password != verify:
             error = "Passwords don't match"
             self.redirect("/?error=" + error)
@@ -112,12 +112,10 @@ class Welcome(webapp2.RequestHandler):
         if email != "":
             if not EMAIL_REGEX.match(email):
                 error = "Invalid Email"
-                self.redirect("/?error=" + error)
+            self.redirect("/?error=" + error)
 
-        welcome_header = "<h1>Welcome, </h1>"
-
-        welcome_sentance = welcome_header + username
-        content = page_header + "<p>" + welcome_sentance + "</p>" + page_footer
+        welcome_sentance = "Welcome, " + username + "!"
+        content = page_header + "<h1>" + welcome_sentance + "</h1>" + page_footer
         self.response.write(content)
 
 app = webapp2.WSGIApplication([
