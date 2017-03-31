@@ -24,6 +24,11 @@ page_header = """
 <html>
 <head>
     <title>Signup</title>
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 """
@@ -47,7 +52,7 @@ form_signup = """
     <br>
     <br>
     <label>
-        Verify:
+        Verify Password:
         <input type="password" name="verify">
     </label>
     <br>
@@ -85,6 +90,10 @@ class MainHandler(webapp2.RequestHandler):
 class Welcome(webapp2.RequestHandler):
     def post(self):
         username = self.request.get("username")
+        USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+        if not USER_RE.match(username):
+            error = "Invalid Username"
+            self.redirect("/?error=" + error)
         if username == "":
             error = "Please enter a username"
             self.redirect("/?error=" + error)
@@ -99,6 +108,11 @@ class Welcome(webapp2.RequestHandler):
             self.redirect("/?error=" + error)
 
         email = self.request.get("email")
+        EMAIL_REGEX = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+        if email != "":
+            if not EMAIL_REGEX.match(email):
+                error = "Invalid Email"
+                self.redirect("/?error=" + error)
 
         welcome_header = "<h1>Welcome, </h1>"
 
