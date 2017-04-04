@@ -37,38 +37,53 @@ page_footer = """
 </body>
 </html>
 """
-form_signup = """
-<form action="/welcome" method="post">
-    <label>
-        Username:
-        <input type="text" name="username">
-    </label>
-    <br>
-    <br>
-    <label>
-        Password:
-        <input type="password" name="password">
-    </label>
-    <br>
-    <br>
-    <label>
-        Verify Password:
-        <input type="password" name="verify">
-    </label>
-    <br>
-    <br>
-    <label>
-        Email: (optional)
-        <input type="text" name="email">
-    <br>
-    <br>
-        <input type="submit" value="Signup!"/>
-    </form>
-    """
+
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
+        username = self.request.get("username")
+        email = self.request.get("email")
         signup_header = "<h1>Signup</h1>"
+        form_signup = """
+        <form action="/welcome" method="post">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Username:</td>
+                        <td>
+                            <input type="text" name="username" value="{0}">
+                        </td>
+                        <td class="error">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Password:</td>
+                        <td>
+                            <input type="password" name="password">
+                        </td>
+                        <td class="error">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Verify Password:</td>
+                        <td>
+                            <input type="password" name="verify">
+                        </td>
+                        <td class="error">
+                        </td>
+                    <tr>
+                        <td class="label">Email: (optional)</td>
+                        <td>
+                            <input type="text" name="email" value="{1}">
+                        </td>
+                        <td class="error">
+                        </td>
+                    </tr>
+                </tbody>
+            <table>
+            <input type="submit" value="Signup!"/>
+        </form>
+        """.format(username, email)
 
         error = self.request.get("error")
         if error:
@@ -89,7 +104,8 @@ class Welcome(webapp2.RequestHandler):
         USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
         if not USER_RE.match(username):
             error = "Invalid Username"
-            self.redirect("/?error=" + error)
+            perams = {username : username}
+            self.redirect("/?error=" + error, username)
         if username == "":
             error = "Please enter a username"
             self.redirect("/?error=" + error)
