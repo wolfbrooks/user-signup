@@ -43,6 +43,10 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get("username")
         email = self.request.get("email")
+        error2 = self.request.get('error2')
+        error1 = self.request.get("error1")
+        error3 = self.request.get("error3")
+        error4 = self.request.get("error4")
         signup_header = "<h1>Signup</h1>"
         form_signup = """
         <form action="/welcome" method="post">
@@ -53,7 +57,7 @@ class MainHandler(webapp2.RequestHandler):
                         <td>
                             <input type="text" name="username" value="{0}">
                         </td>
-                        <td class="error">
+                        <td class="error">{2}
                         </td>
                     </tr>
                     <tr>
@@ -61,7 +65,7 @@ class MainHandler(webapp2.RequestHandler):
                         <td>
                             <input type="password" name="password">
                         </td>
-                        <td class="error">
+                        <td class="error">{3}
                         </td>
                     </tr>
                     <tr>
@@ -69,30 +73,25 @@ class MainHandler(webapp2.RequestHandler):
                         <td>
                             <input type="password" name="verify">
                         </td>
-                        <td class="error">
+                        <td class="error">{4}
                         </td>
                     <tr>
                         <td class="label">Email: (optional)</td>
                         <td>
                             <input type="text" name="email" value="{1}">
                         </td>
-                        <td class="error">
+                        <td class="error">{5}
                         </td>
                     </tr>
                 </tbody>
             <table>
             <input type="submit" value="Signup!"/>
         </form>
-        """.format(username, email)
+        """.format(username, email, error1, error2, error3, error4)
 
-        error = self.request.get("error")
-        if error:
-            error_esc = cgi.escape(error, quote=True)
-            error_element = '<p class="error">' + error_esc + '</p>'
-        else:
-            error_element = ''
 
-        content = page_header + signup_header + form_signup + error_element + page_footer
+
+        content = page_header + signup_header + form_signup + page_footer
         self.response.write(content)
 
 
@@ -101,34 +100,30 @@ class MainHandler(webapp2.RequestHandler):
 class Welcome(webapp2.RequestHandler):
     def post(self):
         username = self.request.get("username")
-        USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-        if not USER_RE.match(username):
-            error = "Invalid Username"
-            perams = {username : username}
-            self.redirect("/?error=" + error, username)
-        if username == "":
-            error = "Please enter a username"
-            self.redirect("/?error=" + error)
-
         password = self.request.get("password")
         verify = self.request.get("verify")
-        if password == "":
-            error = "Please enter a password"
-            self.redirect("/?error=" + error)
+        email = self.request.get("email")
+
+
+        USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+        if not USER_RE.match(username):
+            error1 = "Invalid Username"
+            self.redirect("/?error1=" + error1)
+
         PASS_REGEX = re.compile(r"^.{3,20}$")
         if not PASS_REGEX.match(password):
-            error = "Invalid Password"
-            self.redirect("/?error=" + error)
-        if password != verify:
-            error = "Passwords don't match"
-            self.redirect("/?error=" + error)
+            error2 = "Invalid Password"
+            self.redirect("/?error2=" + error2)
 
-        email = self.request.get("email")
+        if password != verify:
+            error3 = "Passwords don't match"
+            self.redirect("/?error3=" + error3)
+
         EMAIL_REGEX = re.compile(r"^[\S]+@[\S]+.[\S]+$")
         if email != "":
             if not EMAIL_REGEX.match(email):
-                error = "Invalid Email"
-            self.redirect("/?error=" + error)
+                error4 = "Invalid Email"
+            self.redirect("/?error4=" + error4)
 
         welcome_sentance = "Welcome, " + username + "!"
         content = page_header + "<h1>" + welcome_sentance + "</h1>" + page_footer
